@@ -30,6 +30,5 @@
 
 from .actor_critic_rma import ActorCriticRMA
 from .actor_critic import ActorCritic
-from .actor_critic_transformer import ActorCriticTransformer
 from .actor_critic_mimic import ActorCriticMimic
 from .dagger_actor import DAggerActor

@@ -214,7 +214,6 @@ class Humanoid(LeggedRobot):
         self.last_actions[env_ids] = 0.
         self.last_dof_vel[env_ids] = 0.
         self.last_torques[env_ids] = 0.
-        self.last_root_vel[:] = 0.
         self.feet_air_time[env_ids] = 0.
         self.reset_buf[env_ids] = 1
         self.obs_history_buf[env_ids, :, :] = 0.  # reset obs history buffer TODO no 0s
@@ -271,7 +270,6 @@ class Humanoid(LeggedRobot):
         self.base_lin_vel[:] = quat_rotate_inverse(self.base_quat, self.root_states[:, 7:10])
         self.base_ang_vel[:] = quat_rotate_inverse(self.base_quat, self.root_states[:, 10:13])
         self.projected_gravity[:] = quat_rotate_inverse(self.base_quat, self.gravity_vec)
-        self.base_lin_acc = (self.root_states[:, 7:10] - self.last_root_vel[:, :3]) / self.dt
 
         self.roll, self.pitch, self.yaw = euler_from_quaternion(self.base_quat)
 
@@ -295,7 +293,6 @@ class Humanoid(LeggedRobot):
         self.last_actions[:] = self.actions[:]
         self.last_dof_vel[:] = self.dof_vel[:]
         self.last_torques[:] = self.torques[:]
-        self.last_root_vel[:] = self.root_states[:, 7:13]
 
         if self.cfg.rewards.regularization_scale_curriculum:
             # import ipdb; ipdb.set_trace()
@@ -710,10 +707,7 @@ class Humanoid(LeggedRobot):
         rew[self.get_walking_cmd_mask()] = 0.
         return rew
     
-    def _reward_stand_base_acc(self):
-        base_acc = torch.sum(torch.square((self.last_root_vel - self.root_states[:, 7:13]) / self.dt), dim=1)
-        base_acc[self.get_walking_cmd_mask()] = 0.
-        return base_acc
+
     
     def _reward_dof_acc(self):
         return torch.sum(torch.square((self.last_dof_vel - self.dof_vel) / self.dt), dim=1)
