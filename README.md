@@ -60,6 +60,10 @@ pip install redis[hiredis]
 pip install pyttsx3 # for voice control
 cd pose && pip install -e . && cd ..
 ```
+remember to start redis server on your computer:
+```bash
+redis-server --daemonize yes
+```
 
 if you wanna do sim2real, you also need to install [unitree_sdk2py](https://github.com/unitreerobotics/unitree_sdk2_python).
 ```bash
